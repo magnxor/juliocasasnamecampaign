@@ -230,22 +230,6 @@
     .copy-btn:hover { border-color: var(--primary); color: var(--primary); }
     .copy-btn.copied { background: var(--success-bg); color: var(--success); border-color: var(--success); }
 
-    .campo-mapping {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 10px;
-      align-items: center;
-      padding: 8px 0;
-      border-bottom: 1px solid var(--border);
-    }
-
-    .campo-mapping:last-child { border-bottom: none; }
-
-    .campo-label-text {
-      font-size: 13px;
-      font-weight: 600;
-      color: var(--text);
-    }
 
     .meta-params-title {
       font-size: 13px;
@@ -368,18 +352,6 @@
       margin-top: 1px;
     }
 
-    .output-section-label {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      font-size: 12px;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: .5px;
-      color: var(--text-secondary);
-      margin-bottom: 12px;
-      margin-top: 4px;
-    }
 
     .empty-state {
       text-align: center;
@@ -554,36 +526,22 @@
     </div>
   </div>
 
-  <!-- STEP 4: Mapeamento de campos -->
+  <!-- STEP 4: Campos do Formulário -->
   <div class="card">
-    <div class="card-title"><span class="step">4</span> Mapeamento de Campos do Formulário</div>
-    <div class="campo-mapping">
-      <span class="campo-label-text">Campo "Nome"</span>
-      <select id="campoNome" onchange="generate()">
-        <option value="nome_completo">nome_completo</option>
-        <option value="Nome completo">Nome completo</option>
-        <option value="full_name">full_name</option>
-        <option value="full name">full name</option>
-        <option value="nome">nome</option>
-        <option value="first_name">first_name</option>
-      </select>
+    <div class="card-title"><span class="step">4</span> Campos do Formulário</div>
+    <div class="form-row">
+      <div class="form-group">
+        <label>Nome do campo "Nome"</label>
+        <input type="text" id="campoNome" placeholder="Ex: nome_completo" value="nome_completo" oninput="generate()" />
+      </div>
+      <div class="form-group">
+        <label>Nome do campo "Email"</label>
+        <input type="text" id="campoEmail" placeholder="Ex: email" value="email" oninput="generate()" />
+      </div>
     </div>
-    <div class="campo-mapping">
-      <span class="campo-label-text">Campo "Email"</span>
-      <select id="campoEmail" onchange="generate()">
-        <option value="email">email</option>
-        <option value="e-mail">e-mail</option>
-      </select>
-    </div>
-    <div class="campo-mapping">
-      <span class="campo-label-text">Campo "Telefone"</span>
-      <select id="campoTelefone" onchange="generate()">
-        <option value="telefone">telefone</option>
-        <option value="phone_number">phone_number</option>
-        <option value="número_de_telefone">número_de_telefone</option>
-        <option value="qual_o_seu_whatsapp?">qual_o_seu_whatsapp?</option>
-        <option value="Seu melhor telefone">Seu melhor telefone</option>
-      </select>
+    <div class="form-group">
+      <label>Nome do campo "Telefone"</label>
+      <input type="text" id="campoTelefone" placeholder="Ex: phone_number" value="phone_number" oninput="generate()" />
     </div>
   </div>
 
@@ -611,27 +569,13 @@
         Parâmetros de Rastreamento
       </div>
 
-      <div class="meta-params-subtitle">Copie cada valor clicando nele e cole na configuração do formulário Meta.</div>
+      <div class="meta-params-subtitle">Copie cada valor clicando nele e cole na configuração do formulário Meta. Adicione cada linha como um parâmetro separado.</div>
 
-      <!-- Seção 1: Parâmetros de Rastreamento -->
-      <div class="output-section-label">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>
-        Parâmetros de Rastreamento
-      </div>
       <div id="outParamsTable"></div>
-
-      <div class="meta-param-divider"></div>
-
-      <!-- Seção 2: Nomes dos Campos -->
-      <div class="output-section-label">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="9" y1="3" x2="9" y2="21"/></svg>
-        Nomes dos Campos do Formulário
-      </div>
-      <div id="outCamposTable"></div>
 
       <div class="meta-hint">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
-        <span>Clique em qualquer campo para copiar o valor. Adicione cada parâmetro de rastreamento em <strong>Parâmetros de rastreamento</strong> e use os nomes de campo corretos nas <strong>perguntas do formulário</strong>.</span>
+        <span>Clique em qualquer campo para copiar o valor. Para cada linha, clique em <strong>"Adicionar parâmetro"</strong> no formulário Meta e cole o Nome e Valor correspondentes.</span>
       </div>
     </div>
   </div>
@@ -714,16 +658,11 @@
     params.push({ name: paramName, value: paramValue });
     if (idResp) params.push({ name: 'id_usuario_responsavel', value: idResp });
     if (idRespAdd) params.push({ name: 'id_usuario_responsavel_add', value: idRespAdd });
+    if (campoNome) params.push({ name: campoNome, value: campoNome });
+    if (campoEmail) params.push({ name: campoEmail, value: campoEmail });
+    if (campoTelefone) params.push({ name: campoTelefone, value: campoTelefone });
 
     document.getElementById('outParamsTable').innerHTML = buildParamTable(params, 'Nome do parâmetro', 'Valor do parâmetro');
-
-    const campos = [
-      { name: 'Nome', value: campoNome },
-      { name: 'Email', value: campoEmail },
-      { name: 'Telefone / Celular', value: campoTelefone }
-    ];
-
-    document.getElementById('outCamposTable').innerHTML = buildParamTable(campos, 'Campo do formulário', 'Nome aceito pelo CRM');
 
     const parts = [getTipoLabel()];
     if (nomeCampanha) parts.push(nomeCampanha);
