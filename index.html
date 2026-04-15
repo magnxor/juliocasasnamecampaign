@@ -1,0 +1,794 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Nomeador de Campanha</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #f8f9fb;
+      --surface: #ffffff;
+      --border: #e2e5ea;
+      --border-focus: #4f6ef7;
+      --text: #1a1d23;
+      --text-secondary: #5f6676;
+      --primary: #4f6ef7;
+      --primary-hover: #3b58d6;
+      --primary-light: #eef1fd;
+      --success: #22c55e;
+      --success-bg: #f0fdf4;
+      --tag-bg: #f1f3f8;
+      --radius: 10px;
+      --shadow: 0 1px 3px rgba(0,0,0,.06), 0 1px 2px rgba(0,0,0,.04);
+      --shadow-lg: 0 4px 12px rgba(0,0,0,.08);
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      line-height: 1.5;
+    }
+
+    .header {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 20px 0;
+    }
+
+    .header-inner {
+      max-width: 720px;
+      margin: 0 auto;
+      padding: 0 20px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .logo {
+      width: 40px;
+      height: 40px;
+      background: var(--primary);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      font-weight: 700;
+      font-size: 18px;
+      flex-shrink: 0;
+    }
+
+    .header h1 {
+      font-size: 20px;
+      font-weight: 700;
+      letter-spacing: -0.3px;
+    }
+
+    .header p {
+      font-size: 13px;
+      color: var(--text-secondary);
+    }
+
+    .container {
+      max-width: 720px;
+      margin: 0 auto;
+      padding: 28px 20px 60px;
+    }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 24px;
+      margin-bottom: 20px;
+      box-shadow: var(--shadow);
+    }
+
+    .card-title {
+      font-size: 15px;
+      font-weight: 600;
+      margin-bottom: 18px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .card-title .step {
+      background: var(--primary);
+      color: #fff;
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+
+    .toggle-group {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .toggle-btn {
+      flex: 1;
+      min-width: 140px;
+      padding: 12px 16px;
+      border: 2px solid var(--border);
+      border-radius: 8px;
+      background: var(--surface);
+      cursor: pointer;
+      transition: all .15s ease;
+      text-align: center;
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--text);
+      font-family: inherit;
+    }
+
+    .toggle-btn:hover { border-color: var(--primary); background: var(--primary-light); }
+    .toggle-btn.active { border-color: var(--primary); background: var(--primary-light); color: var(--primary); }
+
+    .toggle-btn .toggle-label { display: block; font-weight: 600; }
+    .toggle-btn .toggle-desc { display: block; font-size: 12px; color: var(--text-secondary); margin-top: 2px; }
+
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+    }
+
+    @media (max-width: 520px) {
+      .form-row { grid-template-columns: 1fr; }
+    }
+
+    .form-group { margin-bottom: 16px; }
+    .form-group:last-child { margin-bottom: 0; }
+
+    .form-group label {
+      display: block;
+      font-size: 13px;
+      font-weight: 600;
+      margin-bottom: 6px;
+      color: var(--text);
+    }
+
+    .form-group label span {
+      font-weight: 400;
+      color: var(--text-secondary);
+      font-size: 12px;
+    }
+
+    .form-group input,
+    .form-group select {
+      width: 100%;
+      padding: 10px 14px;
+      border: 1.5px solid var(--border);
+      border-radius: 8px;
+      font-size: 14px;
+      font-family: inherit;
+      color: var(--text);
+      background: var(--surface);
+      transition: border-color .15s ease, box-shadow .15s ease;
+      outline: none;
+    }
+
+    .form-group input:focus,
+    .form-group select:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(79,110,247,.12);
+    }
+
+    .form-group input::placeholder { color: #aab0be; }
+
+    .hidden { display: none !important; }
+
+    .output-card {
+      background: var(--surface);
+      border: 2px solid var(--primary);
+      border-radius: var(--radius);
+      padding: 24px;
+      box-shadow: var(--shadow-lg);
+    }
+
+    .output-title {
+      font-size: 15px;
+      font-weight: 700;
+      margin-bottom: 20px;
+      color: var(--primary);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .output-block {
+      margin-bottom: 18px;
+      background: var(--tag-bg);
+      border-radius: 8px;
+      padding: 14px 16px;
+      position: relative;
+    }
+
+    .output-block:last-child { margin-bottom: 0; }
+
+    .output-label {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .6px;
+      color: var(--text-secondary);
+      margin-bottom: 8px;
+    }
+
+    .output-value {
+      font-size: 15px;
+      font-weight: 600;
+      word-break: break-all;
+      color: var(--text);
+      font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
+      line-height: 1.6;
+    }
+
+    .param-row {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 0;
+    }
+
+    .param-name {
+      color: var(--primary);
+      font-weight: 600;
+    }
+
+    .param-eq {
+      color: var(--text-secondary);
+    }
+
+    .param-val {
+      color: var(--text);
+    }
+
+    .copy-btn {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 6px 10px;
+      font-size: 12px;
+      font-weight: 500;
+      cursor: pointer;
+      color: var(--text-secondary);
+      font-family: inherit;
+      transition: all .15s ease;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .copy-btn:hover { border-color: var(--primary); color: var(--primary); }
+    .copy-btn.copied { background: var(--success-bg); color: var(--success); border-color: var(--success); }
+
+    .campo-mapping {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      align-items: center;
+      padding: 8px 0;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .campo-mapping:last-child { border-bottom: none; }
+
+    .campo-label-text {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 40px 20px;
+      color: var(--text-secondary);
+    }
+
+    .empty-state svg {
+      width: 48px;
+      height: 48px;
+      margin-bottom: 12px;
+      opacity: .3;
+    }
+
+    .empty-state p {
+      font-size: 14px;
+    }
+
+    .divider {
+      height: 1px;
+      background: var(--border);
+      margin: 16px 0;
+    }
+
+    .info-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      background: var(--primary-light);
+      color: var(--primary);
+      font-size: 12px;
+      font-weight: 600;
+      padding: 3px 10px;
+      border-radius: 20px;
+    }
+
+    .history-section { margin-top: 32px; }
+
+    .history-title {
+      font-size: 15px;
+      font-weight: 700;
+      margin-bottom: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .history-clear {
+      font-size: 12px;
+      color: var(--text-secondary);
+      cursor: pointer;
+      background: none;
+      border: none;
+      font-family: inherit;
+      text-decoration: underline;
+    }
+
+    .history-clear:hover { color: var(--text); }
+
+    .history-item {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 12px 16px;
+      margin-bottom: 8px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      cursor: pointer;
+      transition: all .15s ease;
+    }
+
+    .history-item:hover { border-color: var(--primary); }
+
+    .history-item-name {
+      font-size: 13px;
+      font-weight: 600;
+      font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
+    }
+
+    .history-item-date {
+      font-size: 11px;
+      color: var(--text-secondary);
+    }
+
+    .history-item-params {
+      font-size: 11px;
+      color: var(--text-secondary);
+      margin-top: 2px;
+    }
+
+    .gen-btn {
+      width: 100%;
+      padding: 14px;
+      background: var(--primary);
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      font-family: inherit;
+      transition: background .15s ease;
+      margin-top: 4px;
+    }
+
+    .gen-btn:hover { background: var(--primary-hover); }
+
+    .output-section { margin-top: 24px; }
+  </style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-inner">
+    <div class="logo">JC</div>
+    <div>
+      <h1>Nomeador de Campanha</h1>
+      <p>Gere parâmetros de rastreamento para formulários Meta</p>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+
+  <!-- STEP 1: Tipo -->
+  <div class="card">
+    <div class="card-title"><span class="step">1</span> Tipo do Cadastro</div>
+    <div class="toggle-group">
+      <button type="button" class="toggle-btn" data-tipo="empreendimento" onclick="setTipo('empreendimento')">
+        <span class="toggle-label">Empreendimento</span>
+        <span class="toggle-desc">Prefixo E + código</span>
+      </button>
+      <button type="button" class="toggle-btn" data-tipo="imovel_locacao" onclick="setTipo('imovel_locacao')">
+        <span class="toggle-label">Imóvel — Locação</span>
+        <span class="toggle-desc">Prefixo L + código</span>
+      </button>
+      <button type="button" class="toggle-btn" data-tipo="imovel_venda" onclick="setTipo('imovel_venda')">
+        <span class="toggle-label">Imóvel — Venda</span>
+        <span class="toggle-desc">Prefixo V + código</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- STEP 2: Código -->
+  <div class="card">
+    <div class="card-title"><span class="step">2</span> Dados de Identificação</div>
+    <div class="form-row">
+      <div class="form-group">
+        <label>Código / Referência</label>
+        <input type="text" id="codigo" placeholder="Ex: 123" oninput="generate()" />
+      </div>
+      <div class="form-group">
+        <label id="paramNameLabel">Parâmetro gerado</label>
+        <input type="text" id="paramPreview" readonly disabled style="background: var(--tag-bg); color: var(--primary); font-weight: 600; font-family: 'SF Mono', 'Fira Code', monospace;" />
+      </div>
+    </div>
+  </div>
+
+  <!-- STEP 3: Responsáveis -->
+  <div class="card">
+    <div class="card-title"><span class="step">3</span> Corretores</div>
+    <div class="form-row">
+      <div class="form-group">
+        <label>ID Usuário Responsável</label>
+        <input type="text" id="idResponsavel" placeholder="ID do corretor principal" oninput="generate()" />
+      </div>
+      <div class="form-group">
+        <label>ID Responsável Adicional <span>(opcional)</span></label>
+        <input type="text" id="idResponsavelAdd" placeholder="ID do corretor adicional" oninput="generate()" />
+      </div>
+    </div>
+  </div>
+
+  <!-- STEP 4: Mapeamento de campos -->
+  <div class="card">
+    <div class="card-title"><span class="step">4</span> Mapeamento de Campos do Formulário</div>
+    <div class="campo-mapping">
+      <span class="campo-label-text">Campo "Nome"</span>
+      <select id="campoNome" onchange="generate()">
+        <option value="nome_completo">nome_completo</option>
+        <option value="Nome completo">Nome completo</option>
+        <option value="full_name">full_name</option>
+        <option value="full name">full name</option>
+        <option value="nome">nome</option>
+        <option value="first_name">first_name</option>
+      </select>
+    </div>
+    <div class="campo-mapping">
+      <span class="campo-label-text">Campo "Email"</span>
+      <select id="campoEmail" onchange="generate()">
+        <option value="email">email</option>
+        <option value="e-mail">e-mail</option>
+      </select>
+    </div>
+    <div class="campo-mapping">
+      <span class="campo-label-text">Campo "Telefone"</span>
+      <select id="campoTelefone" onchange="generate()">
+        <option value="telefone">telefone</option>
+        <option value="phone_number">phone_number</option>
+        <option value="número_de_telefone">número_de_telefone</option>
+        <option value="qual_o_seu_whatsapp?">qual_o_seu_whatsapp?</option>
+        <option value="Seu melhor telefone">Seu melhor telefone</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- STEP 5: Nome da Campanha (descritivo) -->
+  <div class="card">
+    <div class="card-title"><span class="step">5</span> Identificação da Campanha <span class="info-badge">Opcional</span></div>
+    <div class="form-group">
+      <label>Nome descritivo da campanha</label>
+      <input type="text" id="nomeCampanha" placeholder="Ex: Lançamento Torre Norte" oninput="generate()" />
+    </div>
+  </div>
+
+  <button class="gen-btn" onclick="generate()">Gerar Parâmetros</button>
+
+  <!-- OUTPUT -->
+  <div class="output-section" id="outputSection">
+    <div class="empty-state" id="emptyState">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
+      <p>Preencha os campos acima para gerar os parâmetros</p>
+    </div>
+
+    <div class="output-card hidden" id="outputCard">
+      <div class="output-title">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+        Resultado Gerado
+      </div>
+
+      <!-- Nome do Formulário -->
+      <div class="output-block">
+        <div class="output-label">Nome do Formulário</div>
+        <div class="output-value" id="outFormName">—</div>
+        <button class="copy-btn" onclick="copyText('outFormName', this)">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+          Copiar
+        </button>
+      </div>
+
+      <!-- Parâmetros de Rastreamento -->
+      <div class="output-block">
+        <div class="output-label">Parâmetros de Rastreamento (URL)</div>
+        <div class="output-value" id="outParams">—</div>
+        <button class="copy-btn" onclick="copyText('outParams', this)">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+          Copiar
+        </button>
+      </div>
+
+      <!-- Detalhamento -->
+      <div class="output-block">
+        <div class="output-label">Detalhamento dos Parâmetros</div>
+        <div id="outDetail" style="font-size: 13px;"></div>
+        <button class="copy-btn" onclick="copyAll(this)">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+          Copiar Tudo
+        </button>
+      </div>
+
+      <!-- Campo Mapping -->
+      <div class="output-block">
+        <div class="output-label">Mapeamento de Campos</div>
+        <div id="outCampos" style="font-size: 13px;"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Histórico -->
+  <div class="history-section" id="historySection">
+    <div class="history-title">
+      Histórico Recente
+      <button class="history-clear" onclick="clearHistory()">Limpar</button>
+    </div>
+    <div id="historyList"></div>
+  </div>
+
+</div>
+
+<script>
+  let currentTipo = null;
+
+  function setTipo(tipo) {
+    currentTipo = tipo;
+    document.querySelectorAll('.toggle-btn').forEach(btn => {
+      btn.classList.toggle('active', btn.dataset.tipo === tipo);
+    });
+    generate();
+  }
+
+  function getPrefix() {
+    if (!currentTipo) return '';
+    if (currentTipo === 'empreendimento') return 'E';
+    if (currentTipo === 'imovel_locacao') return 'L';
+    if (currentTipo === 'imovel_venda') return 'V';
+    return '';
+  }
+
+  function getParamName() {
+    if (!currentTipo) return '';
+    if (currentTipo === 'empreendimento') return 'id_empreendimento';
+    return 'id_imovel';
+  }
+
+  function getTipoLabel() {
+    if (currentTipo === 'empreendimento') return 'Empreendimento';
+    if (currentTipo === 'imovel_locacao') return 'Imóvel Locação';
+    if (currentTipo === 'imovel_venda') return 'Imóvel Venda';
+    return '';
+  }
+
+  function generate() {
+    const codigo = document.getElementById('codigo').value.trim();
+    const idResp = document.getElementById('idResponsavel').value.trim();
+    const idRespAdd = document.getElementById('idResponsavelAdd').value.trim();
+    const nomeCampanha = document.getElementById('nomeCampanha').value.trim();
+    const campoNome = document.getElementById('campoNome').value;
+    const campoEmail = document.getElementById('campoEmail').value;
+    const campoTelefone = document.getElementById('campoTelefone').value;
+
+    const prefix = getPrefix();
+    const paramName = getParamName();
+    const paramValue = prefix + codigo;
+
+    const preview = document.getElementById('paramPreview');
+    if (paramName && codigo) {
+      preview.value = paramName + ' = ' + paramValue;
+    } else if (paramName) {
+      preview.value = paramName + ' = ' + prefix + '...';
+    } else {
+      preview.value = '';
+    }
+
+    if (!currentTipo || !codigo) {
+      document.getElementById('emptyState').classList.remove('hidden');
+      document.getElementById('outputCard').classList.add('hidden');
+      return;
+    }
+
+    document.getElementById('emptyState').classList.add('hidden');
+    document.getElementById('outputCard').classList.remove('hidden');
+
+    const parts = [getTipoLabel()];
+    if (nomeCampanha) parts.push(nomeCampanha);
+    parts.push(paramValue);
+    if (idResp) parts.push('Corretor ' + idResp);
+    const formName = parts.join(' | ');
+
+    document.getElementById('outFormName').textContent = formName;
+
+    const urlParams = [];
+    urlParams.push(paramName + '=' + paramValue);
+    if (idResp) urlParams.push('id_usuario_responsavel=' + idResp);
+    if (idRespAdd) urlParams.push('id_usuario_responsavel_add=' + idRespAdd);
+    const urlString = urlParams.join('&');
+
+    document.getElementById('outParams').textContent = urlString;
+
+    let detailHTML = '';
+    detailHTML += makeParamRow(paramName, paramValue);
+    if (idResp) detailHTML += makeParamRow('id_usuario_responsavel', idResp);
+    if (idRespAdd) detailHTML += makeParamRow('id_usuario_responsavel_add', idRespAdd);
+    document.getElementById('outDetail').innerHTML = detailHTML;
+
+    let camposHTML = '';
+    camposHTML += makeCampoRow('Nome', campoNome);
+    camposHTML += makeCampoRow('Email', campoEmail);
+    camposHTML += makeCampoRow('Telefone', campoTelefone);
+    document.getElementById('outCampos').innerHTML = camposHTML;
+
+    saveToHistory({
+      formName,
+      urlString,
+      tipo: currentTipo,
+      codigo,
+      idResp,
+      idRespAdd,
+      timestamp: Date.now()
+    });
+  }
+
+  function makeParamRow(name, value) {
+    return '<div class="param-row">'
+      + '<span class="param-name">' + escHTML(name) + '</span>'
+      + '<span class="param-eq">=</span>'
+      + '<span class="param-val">' + escHTML(value) + '</span>'
+      + '</div>';
+  }
+
+  function makeCampoRow(label, value) {
+    return '<div class="param-row">'
+      + '<span class="param-name">' + escHTML(label) + '</span>'
+      + '<span class="param-eq">&rarr;</span>'
+      + '<span class="param-val">' + escHTML(value) + '</span>'
+      + '</div>';
+  }
+
+  function escHTML(str) {
+    const d = document.createElement('div');
+    d.textContent = str;
+    return d.innerHTML;
+  }
+
+  function copyText(elementId, btn) {
+    const text = document.getElementById(elementId).textContent;
+    navigator.clipboard.writeText(text).then(() => {
+      btn.classList.add('copied');
+      btn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> Copiado!';
+      setTimeout(() => {
+        btn.classList.remove('copied');
+        btn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg> Copiar';
+      }, 2000);
+    });
+  }
+
+  function copyAll(btn) {
+    const formName = document.getElementById('outFormName').textContent;
+    const params = document.getElementById('outParams').textContent;
+    const full = 'Nome do Formulário: ' + formName + '\nParâmetros: ' + params;
+    navigator.clipboard.writeText(full).then(() => {
+      btn.classList.add('copied');
+      btn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> Copiado!';
+      setTimeout(() => {
+        btn.classList.remove('copied');
+        btn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg> Copiar Tudo';
+      }, 2000);
+    });
+  }
+
+  // --- Histórico (localStorage) ---
+  const HISTORY_KEY = 'nomeador_historico';
+  const MAX_HISTORY = 20;
+
+  function getHistory() {
+    try {
+      return JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]');
+    } catch { return []; }
+  }
+
+  function saveToHistory(entry) {
+    const history = getHistory();
+    const exists = history.findIndex(h => h.urlString === entry.urlString);
+    if (exists >= 0) history.splice(exists, 1);
+    history.unshift(entry);
+    if (history.length > MAX_HISTORY) history.length = MAX_HISTORY;
+    localStorage.setItem(HISTORY_KEY, JSON.stringify(history));
+    renderHistory();
+  }
+
+  function clearHistory() {
+    localStorage.removeItem(HISTORY_KEY);
+    renderHistory();
+  }
+
+  function renderHistory() {
+    const history = getHistory();
+    const container = document.getElementById('historyList');
+    const section = document.getElementById('historySection');
+
+    if (history.length === 0) {
+      section.classList.add('hidden');
+      return;
+    }
+
+    section.classList.remove('hidden');
+    container.innerHTML = history.map((item, i) => {
+      const date = new Date(item.timestamp);
+      const dateStr = date.toLocaleDateString('pt-BR') + ' ' + date.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+      return '<div class="history-item" onclick="loadHistory(' + i + ')">'
+        + '<div>'
+        + '<div class="history-item-name">' + escHTML(item.formName) + '</div>'
+        + '<div class="history-item-params">' + escHTML(item.urlString) + '</div>'
+        + '</div>'
+        + '<div class="history-item-date">' + dateStr + '</div>'
+        + '</div>';
+    }).join('');
+  }
+
+  function loadHistory(index) {
+    const history = getHistory();
+    const item = history[index];
+    if (!item) return;
+
+    setTipo(item.tipo);
+    document.getElementById('codigo').value = item.codigo || '';
+    document.getElementById('idResponsavel').value = item.idResp || '';
+    document.getElementById('idResponsavelAdd').value = item.idRespAdd || '';
+    generate();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  renderHistory();
+</script>
+
+</body>
+</html>
